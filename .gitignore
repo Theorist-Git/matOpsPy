@@ -1,6 +1,10 @@
 .venv
 .vscode
+.eggs
 
-pyMatOps/__pycache__
-pyMatOps/*.so
-pyMatOps.egg-info
+matOpsPy/__pycache__
+matOpsPy/*.so
+matOpsPy.egg-info
+
+build/
+dist/

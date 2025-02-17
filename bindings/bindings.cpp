@@ -6,7 +6,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(pyMatOps, m) {
+PYBIND11_MODULE(matOpsPy, m) {
     m.doc() = "Python bindings for matOps library";
 
     py::class_<Matrix>(m, "Matrix")

@@ -1,4 +1,4 @@
-from pyMatOps import Matrix
+from matOpsPy import Matrix
 
 A = Matrix([
     [1, 2, 3],
@@ -6,4 +6,4 @@ A = Matrix([
     [7, 8, 4]
 ])
 
-print(A.insertCol(1, 0).inverse())
+print(A.insertCol(1, 0).transpose())

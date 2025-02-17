@@ -1,4 +1,4 @@
-from .pyMatOps import Matrix
+from .matOpsPy import Matrix
 
 __version__ = "0.1.0"
 __author__ = "Mayank Vats"

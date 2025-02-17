@@ -1,41 +1,54 @@
 #!/bin/bash
-# build.sh - A simple build script for the pymatops Python module
+# build.sh - A simple build script for the matOpsPy Python module
 
 set -e
 
-# Build this version
-VERSION=$1
+# Default: do not install new matOps.hpp
+INSTALL_NEW=0
 
-# Check if user provided version number
-if [ -z "$VERSION" ]; then
-    echo "Error: VERSION argument is missing!"
-    echo "Usage: $0 <version>"
-    exit 1
+# Check for the flag --install-new as the first argument
+if [ "$1" == "--install-new" ]; then
+    INSTALL_NEW=1
+    shift  # Remove the flag from the arguments so that $1 becomes the version
 fi
 
-# Make include dir if not there
-mkdir -p include/
+if [ $INSTALL_NEW -eq 1 ]; then
+    # Check if user provided a version number
+    if [ -z "$1" ]; then
+        echo "Error: VERSION argument is missing!"
+        echo "Usage: $0 --install-new <version>"
+        exit 1
+    fi
 
-# Check if matOps.hpp already exists and remove it
-if [ -f "include/matOps.hpp" ]; then
-    echo "Removing existing matOps.hpp"
-    rm -f include/matOps.hpp
+    VERSION=$1
+
+    # Create include directory if not present
+    mkdir -p include/
+
+    # Remove existing matOps.hpp if it exists
+    if [ -f "include/matOps.hpp" ]; then
+        echo "Removing existing matOps.hpp"
+        rm -f include/matOps.hpp
+    fi
+
+    # Ensure wget is installed
+    if ! command -v wget &>/dev/null; then
+        echo "Error: wget is not installed. Please install it and try again."
+        exit 1
+    fi
+
+    # Download the new matOps.hpp from the specified version
+    wget "https://github.com/Theorist-Git/matOps/releases/download/${VERSION}/matOps.hpp" -P include/ || {
+        echo "Error: Failed to download matOps.hpp. Check version: ${VERSION}"
+        exit 1
+    }
+
+    echo "Downloaded matOps.hpp version ${VERSION}"
 fi
 
-# Ensure wget is installed
-if ! command -v wget &>/dev/null; then
-    echo "Error: wget is not installed. Please install it and try again."
-    exit 1
-fi
+echo "Building matOpsPy"
 
-wget "https://github.com/Theorist-Git/matOps/releases/download/${VERSION}/matOps.hpp" -P include/ || {
-    echo "Error: Failed to download matOps.hpp. Check version: ${VERSION}"
-    exit 1
-}
-
-echo "Building matOps.hpp ${VERSION}"
-
-# Ensure pybind11 and python3-config are available
+# Ensure pybind11 is installed and python3-config is available
 if ! python3 -m pybind11 --includes &>/dev/null; then
     echo "Error: pybind11 is not installed. Run 'pip install pybind11'."
     exit 1
@@ -46,20 +59,18 @@ if ! command -v python3-config &>/dev/null; then
     exit 1
 fi
 
-# Get the pybind11 include flags (this calls the pybind11 CLI)
+# Get pybind11 include flags and the Python extension suffix
 PYBIND11_FLAGS=$(python3 -m pybind11 --includes)
-
-# Get the Python extension suffix (e.g., .so, .pyd)
 EXT_SUFFIX=$(python3-config --extension-suffix)
 
-LIB_NAME="pyMatOps"
+LIB_NAME="matOpsPy"
 SRC_FILE="bindings/bindings.cpp"
-OUT_DIR="pyMatOps"
+OUT_DIR="matOpsPy"
 
 # Ensure the output directory exists
-mkdir -p $OUT_DIR
+mkdir -p "$OUT_DIR"
 
 # Compile the bindings into a shared library
-g++ -O3 -Wall -shared -std=c++11 -fPIC -fvisibility=hidden ${PYBIND11_FLAGS} -Iinclude -o $OUT_DIR/${LIB_NAME}${EXT_SUFFIX} $SRC_FILE
+g++ -O3 -Wall -shared -std=c++11 -fPIC -fvisibility=hidden ${PYBIND11_FLAGS} -Iinclude -o "$OUT_DIR/${LIB_NAME}${EXT_SUFFIX}" "$SRC_FILE"
 
-echo "Build complete. Run 'pip install -e .' to install pyMatOps to your env"
+echo "Build complete. Run 'pip install -e .' to install matOpsPy into your environment."
