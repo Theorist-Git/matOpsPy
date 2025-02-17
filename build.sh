@@ -1,7 +1,7 @@
 #!/bin/bash
 # build.sh - A simple build script for the pymatops Python module
 
-set -xe
+set -e
 
 # Build this version
 VERSION=$1
@@ -15,6 +15,12 @@ fi
 
 # Make include dir if not there
 mkdir -p include/
+
+# Check if matOps.hpp already exists and remove it
+if [ -f "include/matOps.hpp" ]; then
+    echo "Removing existing matOps.hpp"
+    rm -f include/matOps.hpp
+fi
 
 # Ensure wget is installed
 if ! command -v wget &>/dev/null; then
@@ -56,4 +62,4 @@ mkdir -p $OUT_DIR
 # Compile the bindings into a shared library
 g++ -O3 -Wall -shared -std=c++11 -fPIC -fvisibility=hidden ${PYBIND11_FLAGS} -Iinclude -o $OUT_DIR/${LIB_NAME}${EXT_SUFFIX} $SRC_FILE
 
-echo "Build complete. You can now import 'pyMatOps' in Python."
+echo "Build complete. Run 'pip install -e .' to install pyMatOps to your env"
