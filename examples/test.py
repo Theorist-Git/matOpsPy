@@ -6,4 +6,4 @@ A = Matrix([
     [7, 8, 4]
 ])
 
-print(A.insertCol(1, 0).transpose())
+print(A.insertCol(colVal=4))

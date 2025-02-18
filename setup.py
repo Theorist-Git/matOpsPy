@@ -1,17 +1,25 @@
 from setuptools import setup, Extension
 import pybind11
+import os
 
-# ext_modules = [
-#     Extension(
-#         'matOpsPy',                       # module name
-#         ['bindings/bindings.cpp'],        # source file(s)
-#         include_dirs=[
-#             pybind11.get_include(),
-#             'include',                    # path to your header-only lib
-#         ],
-#         language='c++'
-#     ),
-# ]
+ext_modules = [
+    Extension(
+        "matOpsPy.matOpsPy",  # This is the module name. It will be accessible as matOpsPy in Python.
+        sources=["bindings/bindings.cpp"],  # Path to your C++ source file
+        include_dirs=[
+            pybind11.get_include(),           # Include pybind11 headers
+            os.path.join(os.path.dirname(__file__), "include")  # Include your own headers
+        ],
+        language="c++",
+        extra_compile_args=[
+            "-O3",
+            "-Wall",
+            "-std=c++11",
+            "-fPIC",
+            "-fvisibility=hidden"
+        ],  # Optimization flag (adjust as needed)
+    ),
+]
 
 setup(
     name="matOpsPy",
@@ -29,6 +37,7 @@ setup(
     ],
     include_package_data=True,
     keywords=['Linear Algebra', 'Matrices'],
+    ext_modules=ext_modules,
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
