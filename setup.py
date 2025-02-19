@@ -23,7 +23,7 @@ ext_modules = [
 
 setup(
     name="matOpsPy",
-    version="0.1.0",
+    version="0.2.1",
     author="Mayank Vats",
     author_email="dev-theorist.e5xna@simplelogin.com",
     description="Python bindings for matOps library",

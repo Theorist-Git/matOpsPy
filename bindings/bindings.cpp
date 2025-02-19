@@ -47,6 +47,9 @@ PYBIND11_MODULE(matOpsPy, m) {
              py::arg("rowSlice"), py::arg("colSlice"),
              "Extracts a submatrix given row and column index ranges (as pairs).")
 
+        .def("sum", &Matrix::sum, "Computes the sum of the elements of a vector.")
+        .def("mean", &Matrix::mean, "Computes the mean (average) of the elements of a vector.")
+
         // Support for element access using the [] operator:
         .def("__getitem__", [](Matrix &self, py::tuple index) -> double {
             if (index.size() != 2)
@@ -62,6 +65,10 @@ PYBIND11_MODULE(matOpsPy, m) {
             size_t j = index[1].cast<size_t>();
             self(i, j) = value;
         })
+
+        .def("__pow__", [](const Matrix &self, double scalar) -> Matrix {
+               return self ^ scalar;
+          }, py::is_operator())
 
         // Operator overloading for arithmetic operations
         .def(py::self + py::self)
